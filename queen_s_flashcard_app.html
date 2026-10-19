@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Queen's College - RevisionSpark Spaced Repetition</title>
+
+  <!-- Google Fonts: EB Garamond & Public Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Public+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX CSS & JS for LaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind Custom Colors Configuration aligned with Brand Book -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            queens: {
+              yellow: '#FFD21E',  // Primary Brand Yellow
+              black: '#000C02',   // Primary Rich Black
+              grey: '#DEDEDE',    // Wash Grey
+              purple: '#B780FF',  // CTA Purple
+              pink: '#FF6D7D',    // Again / Danger Accent
+              orange: '#FF822C',  // Hard / Warning Accent
+              green: '#00B764',   // Good / Success Accent
+              blue: '#74C1ED'     // Easy / Info Accent
+            }
+          },
+          fontFamily: {
+            serif: ['"EB Garamond"', 'serif'],
+            sans: ['"Public Sans"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles for Card Flip Animation and Brand Palette -->
+  <style>
+    body {
+      font-family: 'Public Sans', sans-serif;
+      background-color: #F8F9FA;
+      color: #000C02;
+    }
+
+    .font-serif-brand {
+      font-family: 'EB Garamond', serif;
+    }
+
+    /* 3D Card Perspective and Flip Effects */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      top: 0;
+      left: 0;
+    }
+    
+    .card-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Queen's Branding Accents */
+    .queens-shadow {
+      box-shadow: 0 10px 25px -5px rgba(0, 12, 2, 0.1), 0 8px 10px -6px rgba(0, 12, 2, 0.05);
+    }
+
+    .queens-border {
+      border: 1px solid rgba(0, 12, 2, 0.12);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F1F1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #DEDEDE;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FFD21E;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-slate-50 text-queens-black antialiased">
+
+  <!-- ========================================== -->
+  <!-- HEADER & NAVIGATION                        -->
+  <!-- ========================================== -->
+  <header class="bg-queens-black text-white shadow-lg sticky top-0 z-40 border-b-4 border-queens-yellow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand Logo & Title -->
+        <div class="flex items-center space-x-4">
+          <!-- Custom Wyvern SVG Icon -->
+          <div class="bg-queens-yellow p-2.5 rounded-xl text-queens-black flex items-center justify-center shadow-md">
+            <svg class="w-8 h-8 fill-current" viewBox="0 0 100 100">
+              <!-- Wyvern Silhouette Vector -->
+              <path d="M50 5 C30 5, 15 20, 15 40 C15 55, 25 65, 30 70 C20 75, 10 85, 5 95 L25 95 C30 88, 38 82, 45 80 C40 85, 38 92, 40 98 L55 98 C58 90, 62 82, 70 80 C68 88, 70 94, 75 98 L90 98 C82 88, 80 75, 85 65 C92 50, 85 30, 70 18 C65 12, 58 8, 50 5 Z M45 25 C50 20, 60 20, 65 25 C70 30, 68 40, 60 45 C50 50, 40 40, 45 25 Z M30 35 C35 30, 40 35, 38 40 C35 45, 28 42, 30 35 Z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-baseline space-x-2">
+              <span class="font-serif-brand font-bold text-2xl tracking-wider text-white">QUEEN'S COLLEGE</span>
+              <span class="text-xs bg-queens-yellow text-queens-black font-semibold px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">TAUNTON</span>
+            </div>
+            <p class="text-xs text-amber-200/90 tracking-wide font-light">
+              <span class="font-serif-brand italic">Learn for life.</span> &bull; RevisionSpark Spaced Repetition
+            </p>
+          </div>
+        </div>
+
+        <!-- User Profile Pill & Login State -->
+        <div class="flex items-center space-x-3">
+          <div id="userBadge" class="hidden sm:flex items-center bg-white/10 hover:bg-white/15 transition border border-white/20 rounded-full px-4 py-1.5 text-xs text-amber-100 space-x-2 cursor-pointer" onclick="openLoginModal()">
+            <i class="fa-solid fa-user-graduate text-queens-yellow"></i>
+            <span id="displayUserName" class="font-medium">Student</span>
+            <span class="bg-queens-yellow/20 text-queens-yellow px-2 py-0.5 rounded-full font-mono text-[10px]" id="displayClassCode">MATH101</span>
+          </div>
+
+          <button onclick="openLoginModal()" class="text-xs text-white/80 hover:text-queens-yellow p-2 rounded-lg hover:bg-white/10 transition" title="Change Student / Class">
+            <i class="fa-solid fa-right-from-bracket text-base"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Navigation Bar Tabs -->
+      <nav class="flex space-x-2 sm:space-x-6 border-t border-white/10 pt-2 pb-1 overflow-x-auto text-xs sm:text-sm font-medium">
+        <button id="tab-review" onclick="switchTab('review')" class="nav-tab active flex items-center space-x-2 py-2 px-3 border-b-2 border-queens-yellow text-queens-yellow font-semibold whitespace-nowrap">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Today's Review</span>
+          <span id="reviewBadgeCount" class="bg-queens-yellow text-queens-black px-2 py-0.5 rounded-full text-xs font-bold ml-1">0</span>
+        </button>
+
+        <button id="tab-library" onclick="switchTab('library')" class="nav-tab flex items-center space-x-2 py-2 px-3 border-b-2 border-transparent text-gray-300 hover:text-white transition whitespace-nowrap">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Deck Library</span>
+        </button>
+
+        <button id="tab-generator" onclick="switchTab('generator')" class="nav-tab flex items-center space-x-2 py-2 px-3 border-b-2 border-transparent text-gray-300 hover:text-white transition whitespace-nowrap">
+          <i class="fa-solid fa-wand-magic-sparkles text-queens-purple"></i>
+          <span class="text-purple-200">AI Flashcard Creator</span>
+        </button>
+
+        <button id="tab-analytics" onclick="switchTab('analytics')" class="nav-tab flex items-center space-x-2 py-2 px-3 border-b-2 border-transparent text-gray-300 hover:text-white transition whitespace-nowrap">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Teacher Dashboard</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+
+  <!-- ========================================== -->
+  <!-- MAIN CONTENT CONTAINER                     -->
+  <!-- ========================================== -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: SPACED REPETITION REVIEW            -->
+    <!-- ========================================== -->
+    <section id="sec-review" class="tab-content block space-y-6">
+      
+      <!-- Review Queue Summary Bar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-6 queens-shadow queens-border flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-brand text-2xl font-bold text-queens-black">Spaced Repetition Queue</h2>
+            <p class="text-xs text-gray-500">SuperMemo SM-2 algorithm optimizes recall efficiency.</p>
+          </div>
+        </div>
+
+        <!-- Metrics Badges -->
+        <div class="flex items-center space-x-4 text-xs">
+          <div class="text-center px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200">
+            <span class="block font-bold text-queens-black text-base" id="statDueCount">0</span>
+            <span class="text-gray-500 uppercase tracking-wider text-[10px]">Due Today</span>
+          </div>
+          <div class="text-center px-3 py-1.5 bg-emerald-50 rounded-xl border border-emerald-200">
+            <span class="block font-bold text-queens-green text-base" id="statReviewedToday">0</span>
+            <span class="text-emerald-700 uppercase tracking-wider text-[10px]">Reviewed Today</span>
+          </div>
+          <div class="text-center px-3 py-1.5 bg-purple-50 rounded-xl border border-purple-200">
+            <span class="block font-bold text-queens-purple text-base" id="statRetentionRate">100%</span>
+            <span class="text-purple-700 uppercase tracking-wider text-[10px]">Retention Score</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flashcard Interactive Display Area -->
+      <div id="reviewCardArea" class="max-w-2xl mx-auto my-8">
+        
+        <!-- Active Review Card Stack -->
+        <div id="cardContainer" class="w-full h-[380px] sm:h-[420px] perspective-1000 cursor-pointer" onclick="flipCard()">
+          <div id="cardInner" class="card-inner">
+            
+            <!-- CARD FRONT -->
+            <div class="card-front bg-white rounded-3xl p-6 sm:p-8 queens-shadow queens-border flex flex-col justify-between border-t-8 border-queens-yellow relative overflow-hidden">
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <span id="cardSubjectFront" class="font-bold uppercase tracking-wider bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Subject</span>
+                <span class="text-gray-400 font-mono"><i class="fa-solid fa-rotate mr-1"></i> Tap or press [Space] to flip</span>
+              </div>
+
+              <!-- Question Area -->
+              <div class="my-auto py-4 text-center">
+                <div id="cardQuestionText" class="font-serif-brand text-2xl sm:text-3xl text-queens-black leading-relaxed">
+                  Loading Question...
+                </div>
+                <!-- Optional Image Container -->
+                <div id="cardFrontImageContainer" class="mt-4 hidden max-h-36 overflow-hidden rounded-xl">
+                  <img id="cardFrontImage" src="" alt="Card Graphic" class="mx-auto object-cover max-h-36 rounded-xl shadow-sm" onerror="this.parentElement.classList.add('hidden')">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
+                <span>Card ID: <span id="cardIdDisplay" class="font-mono">#000</span></span>
+                <span id="cardEaseDisplay" class="font-mono">Ease: 2.50</span>
+              </div>
+            </div>
+
+            <!-- CARD BACK -->
+            <div class="card-back bg-slate-900 text-white rounded-3xl p-6 sm:p-8 queens-shadow flex flex-col justify-between border-t-8 border-queens-purple relative overflow-hidden">
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span id="cardSubjectBack" class="font-bold uppercase tracking-wider bg-purple-900/80 text-purple-200 px-3 py-1 rounded-full">Answer Key</span>
+                <span class="text-amber-300 font-medium"><i class="fa-solid fa-circle-check mr-1"></i> Select Recall Rating Below</span>
+              </div>
+
+              <!-- Answer Content -->
+              <div class="my-auto py-4 text-center">
+                <div id="cardAnswerText" class="font-serif-brand text-2xl sm:text-3xl text-amber-100 leading-relaxed">
+                  Loading Answer...
+                </div>
+                <!-- Optional Back Image Container -->
+                <div id="cardBackImageContainer" class="mt-4 hidden max-h-32 overflow-hidden rounded-xl">
+                  <img id="cardBackImage" src="" alt="Answer Graphic" class="mx-auto object-cover max-h-32 rounded-xl shadow-sm" onerror="this.parentElement.classList.add('hidden')">
+                </div>
+              </div>
+
+              <div class="text-center text-xs text-slate-400 border-t border-slate-800 pt-3">
+                Rate difficulty to schedule next repetition
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SM-2 Rating Controls (Revealed when card is flipped) -->
+        <div id="ratingControls" class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 opacity-50 pointer-events-none transition-all duration-300">
+          
+          <!-- Again Button (1) -->
+          <button onclick="rateCard(1, event)" class="bg-queens-pink hover:brightness-105 active:scale-95 text-white p-3 rounded-2xl shadow-md flex flex-col items-center justify-center transition">
+            <span class="text-xs uppercase font-extrabold tracking-wider opacity-90">1. Again</span>
+            <span class="text-sm font-bold mt-0.5">&lt; 1 min</span>
+            <span class="text-[10px] opacity-75 mt-0.5">Reset Interval</span>
+          </button>
+
+          <!-- Hard Button (2) -->
+          <button onclick="rateCard(2, event)" class="bg-queens-orange hover:brightness-105 active:scale-95 text-white p-3 rounded-2xl shadow-md flex flex-col items-center justify-center transition">
+            <span class="text-xs uppercase font-extrabold tracking-wider opacity-90">2. Hard</span>
+            <span id="intervalHardText" class="text-sm font-bold mt-0.5">1 day</span>
+            <span class="text-[10px] opacity-75 mt-0.5">+1.2x Interval</span>
+          </button>
+
+          <!-- Good Button (3) -->
+          <button onclick="rateCard(3, event)" class="bg-queens-green hover:brightness-105 active:scale-95 text-white p-3 rounded-2xl shadow-md flex flex-col items-center justify-center transition">
+            <span class="text-xs uppercase font-extrabold tracking-wider opacity-90">3. Good</span>
+            <span id="intervalGoodText" class="text-sm font-bold mt-0.5">3 days</span>
+            <span class="text-[10px] opacity-75 mt-0.5">Normal SM-2</span>
+          </button>
+
+          <!-- Easy Button (4) -->
+          <button onclick="rateCard(4, event)" class="bg-queens-blue hover:brightness-105 active:scale-95 text-queens-black p-3 rounded-2xl shadow-md flex flex-col items-center justify-center transition font-semibold">
+            <span class="text-xs uppercase font-extrabold tracking-wider opacity-90">4. Easy</span>
+            <span id="intervalEasyText" class="text-sm font-bold mt-0.5">6 days</span>
+            <span class="text-[10px] opacity-75 mt-0.5">Bonus Factor</span>
+          </button>
+
+        </div>
+
+        <div class="mt-4 text-center text-xs text-gray-400 flex items-center justify-center space-x-4">
+          <span><kbd class="px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-[10px] font-mono">Space</kbd> Flip Card</span>
+          <span><kbd class="px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-[10px] font-mono">1-4</kbd> Rate Recall</span>
+        </div>
+
+      </div>
+
+      <!-- Empty Queue State Screen -->
+      <div id="emptyQueueState" class="hidden max-w-lg mx-auto bg-white p-8 rounded-3xl text-center queens-shadow queens-border space-y-4">
+        <div class="w-16 h-16 bg-emerald-100 text-queens-green rounded-2xl flex items-center justify-center text-3xl mx-auto">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h3 class="font-serif-brand text-3xl font-bold text-queens-black">All Due Cards Complete!</h3>
+        <p class="text-sm text-gray-600">Great work! You have completed all scheduled flashcards for today. Return tomorrow or explore the Deck Library to review early.</p>
+        <div class="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+          <button onclick="switchTab('library')" class="bg-queens-black text-white px-5 py-2.5 rounded-xl font-medium text-xs hover:bg-slate-800 transition">
+            <i class="fa-solid fa-book-open mr-1.5"></i> Browse Deck Library
+          </button>
+          <button onclick="resetAllReviewTimes()" class="bg-queens-yellow text-queens-black px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-amber-400 transition">
+            <i class="fa-solid fa-rotate-right mr-1.5"></i> Custom Extra Review
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 2: DECK LIBRARY & CARD MANAGEMENT      -->
+    <!-- ========================================== -->
+    <section id="sec-library" class="tab-content hidden space-y-6">
+      
+      <!-- Top Action Controls & Search -->
+      <div class="bg-white rounded-2xl p-4 sm:p-6 queens-shadow queens-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="font-serif-brand text-2xl font-bold text-queens-black">Deck Library & Card Manager</h2>
+          <p class="text-xs text-gray-500">Manage curriculum flashcards, LaTeX formulas, and image assets.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button onclick="openCardModal()" class="bg-queens-purple text-white px-4 py-2.5 rounded-xl text-xs font-bold hover:brightness-110 transition flex items-center shadow-sm">
+            <i class="fa-solid fa-plus mr-2"></i> New Card
+          </button>
+          
+          <!-- Data Portability Dropdown -->
+          <button onclick="exportDeckJSON()" class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-200 transition" title="Export JSON">
+            <i class="fa-solid fa-download mr-1"></i> Export JSON
+          </button>
+          
+          <label class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-200 transition cursor-pointer" title="Import JSON">
+            <i class="fa-solid fa-file-import mr-1"></i> Import JSON
+            <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importDeckJSON(event)">
+          </label>
+
+          <button onclick="exportDeckCSV()" class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2.5 rounded-xl text-xs font-semibold hover:bg-slate-200 transition" title="Export CSV">
+            <i class="fa-solid fa-file-csv mr-1"></i> CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters & Search Bar -->
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="relative flex-grow w-full">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+          <input type="text" id="searchLibraryInput" oninput="renderLibraryCards()" placeholder="Search questions, answers, formulas, tags..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none">
+        </div>
+        
+        <select id="filterSubjectSelect" onchange="renderLibraryCards()" class="w-full sm:w-48 py-2.5 px-3 bg-white border border-gray-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-queens-purple focus:outline-none">
+          <option value="ALL">All Subjects</option>
+        </select>
+      </div>
+
+      <!-- Card Grid View -->
+      <div id="libraryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Cards injected dynamically -->
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 3: AI FLASHCARD GENERATOR (GEMINI)      -->
+    <!-- ========================================== -->
+    <section id="sec-generator" class="tab-content hidden space-y-6">
+      
+      <div class="bg-white rounded-2xl p-6 queens-shadow queens-border space-y-6">
+        
+        <div class="flex items-center space-x-4 border-b border-gray-100 pb-4">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-queens-purple flex items-center justify-center text-2xl">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div>
+            <h2 class="font-serif-brand text-2xl font-bold text-queens-black">AI Study Card Generator</h2>
+            <p class="text-xs text-gray-500">Powered by Gemini AI. Input lesson notes, text, or a topic to generate Queen's curriculum flashcards with LaTeX equations.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Generator Input Column -->
+          <div class="md:col-span-2 space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
+                Topic or Lesson Notes
+              </label>
+              <textarea id="aiTopicInput" rows="5" placeholder="e.g. Photosynthesis light-dependent reactions, Chloroplast structure, ATP synthesis, NADPH production..." class="w-full p-3.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Subject Tag</label>
+                <input type="text" id="aiSubjectTag" value="Biology" placeholder="Subject name" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Number of Cards (3-10)</label>
+                <input type="number" id="aiCardCount" min="3" max="10" value="5" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none">
+              </div>
+            </div>
+
+            <button id="btnGenerateAI" onclick="generateCardsWithGemini()" class="w-full bg-queens-purple text-white py-3 rounded-xl font-bold text-xs hover:brightness-110 active:scale-[0.99] transition shadow-md flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-bolt text-amber-300"></i>
+              <span>Generate Queen's Flashcards</span>
+            </button>
+          </div>
+
+          <!-- Guidelines Box -->
+          <div class="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 text-xs space-y-3">
+            <h4 class="font-serif-brand text-base font-bold text-amber-900 flex items-center">
+              <i class="fa-solid fa-lightbulb text-queens-yellow mr-2"></i> How AI Generation Works
+            </h4>
+            <ul class="space-y-2 text-amber-800 text-[11px] leading-relaxed">
+              <li>&bull; Analyzes your input text for key concepts and definitions.</li>
+              <li>&bull; Formats mathematics using standard LaTeX syntax (`$...$` and `$$...$$`).</li>
+              <li>&bull; Creates precise front/back question-answer pairs tailored for SM-2 spaced repetition.</li>
+            </ul>
+            <div class="pt-2 border-t border-amber-200/60 text-[10px] text-amber-700">
+              <span class="font-bold">Model:</span> gemini-3-flash-preview
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Generated Flashcards Preview Area -->
+        <div id="aiResultsArea" class="hidden pt-6 border-t border-gray-100 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-serif-brand text-xl font-bold text-queens-black">Generated Cards Preview</h3>
+            <button onclick="addAllAiGeneratedCards()" class="bg-queens-green text-white px-4 py-2 rounded-xl font-bold text-xs hover:brightness-105 transition flex items-center space-x-1">
+              <i class="fa-solid fa-plus-circle mr-1"></i> Add All to Deck Library
+            </button>
+          </div>
+
+          <div id="aiResultsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamically populated AI cards -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 4: TEACHER ANALYTICS DASHBOARD         -->
+    <!-- ========================================== -->
+    <section id="sec-analytics" class="tab-content hidden space-y-6">
+      
+      <div class="bg-white rounded-2xl p-6 queens-shadow queens-border space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl bg-queens-black text-queens-yellow flex items-center justify-center text-2xl">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div>
+              <h2 class="font-serif-brand text-2xl font-bold text-queens-black">Teacher Analytics & Struggle Heatmap</h2>
+              <p class="text-xs text-gray-500">Monitor student performance, retention metrics, and high-risk flashcards.</p>
+            </div>
+          </div>
+
+          <!-- Class Code Filter -->
+          <div class="flex items-center space-x-2">
+            <label class="text-xs font-bold text-gray-600 uppercase">Class Filter:</label>
+            <select id="analyticsClassFilter" onchange="renderAnalyticsDashboard()" class="py-2 px-3 bg-slate-50 border border-gray-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-queens-purple">
+              <option value="ALL">All Classes</option>
+              <option value="MATH101">MATH101</option>
+              <option value="10B-PHYS">10B-PHYS</option>
+              <option value="GCSE-HIST">GCSE-HIST</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Top Metric Indicators -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl text-center">
+            <span class="text-2xl font-bold font-serif-brand text-queens-black block" id="analyticsTotalReviews">0</span>
+            <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Total Logged Reviews</span>
+          </div>
+
+          <div class="bg-purple-50 border border-purple-200 p-4 rounded-2xl text-center">
+            <span class="text-2xl font-bold font-serif-brand text-queens-purple block" id="analyticsAvgRetention">0%</span>
+            <span class="text-xs text-purple-800 uppercase tracking-wider font-semibold">Avg Class Retention</span>
+          </div>
+
+          <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-center">
+            <span class="text-2xl font-bold font-serif-brand text-queens-pink block" id="analyticsHighRiskCount">0</span>
+            <span class="text-xs text-rose-800 uppercase tracking-wider font-semibold">High Failure Cards</span>
+          </div>
+
+          <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center">
+            <span class="text-2xl font-bold font-serif-brand text-queens-green block" id="analyticsAvgEase">2.50</span>
+            <span class="text-xs text-emerald-800 uppercase tracking-wider font-semibold">Average Ease Factor</span>
+          </div>
+        </div>
+
+        <!-- Heatmap / Struggling Cards Table -->
+        <div class="space-y-3">
+          <h3 class="font-serif-brand text-xl font-bold text-queens-black flex items-center">
+            <i class="fa-solid fa-triangle-exclamation text-queens-pink mr-2"></i> High Difficulty Cards (Failure Rate &gt; 30%)
+          </h3>
+
+          <div class="overflow-x-auto border border-gray-200 rounded-2xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 text-queens-black font-bold uppercase tracking-wider text-[11px] border-b border-gray-200">
+                <tr>
+                  <th class="p-3">Card ID</th>
+                  <th class="p-3">Subject</th>
+                  <th class="p-3">Question Prompt</th>
+                  <th class="p-3 text-center">Total Attempts</th>
+                  <th class="p-3 text-center">"Again" Rate %</th>
+                  <th class="p-3 text-center">Ease Factor</th>
+                  <th class="p-3">Intervention Status</th>
+                </tr>
+              </thead>
+              <tbody id="struggleTableBody" class="divide-y divide-gray-100 bg-white">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: LOGIN & CLASS IDENTIFICATION        -->
+  <!-- ========================================== -->
+  <div id="loginModal" class="fixed inset-0 z-50 bg-queens-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 queens-shadow border-t-8 border-queens-yellow space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-queens-yellow text-queens-black rounded-2xl flex items-center justify-center mx-auto text-xl font-bold shadow-sm">
+          <svg class="w-7 h-7 fill-current" viewBox="0 0 100 100">
+            <path d="M50 5 C30 5, 15 20, 15 40 C15 55, 25 65, 30 70 C20 75, 10 85, 5 95 L25 95 C30 88, 38 82, 45 80 C40 85, 38 92, 40 98 L55 98 C58 90, 62 82, 70 80 C68 88, 70 94, 75 98 L90 98 C82 88, 80 75, 85 65 C92 50, 85 30, 70 18 C65 12, 58 8, 50 5 Z M45 25 C50 20, 60 20, 65 25 C70 30, 68 40, 60 45 C50 50, 40 40, 45 25 Z" />
+          </svg>
+        </div>
+        <h3 class="font-serif-brand text-2xl font-bold text-queens-black">Student & Class Sign-In</h3>
+        <p class="text-xs text-gray-500">Enter your Class Code and First Name to customize spaced repetition logs.</p>
+      </div>
+
+      <form onsubmit="saveUserProfile(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Class Code</label>
+          <input type="text" id="inputClassCode" required placeholder="e.g. MATH101, 10B-PHYS" class="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-xs font-semibold uppercase focus:ring-2 focus:ring-queens-yellow focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">First Name</label>
+          <input type="text" id="inputStudentName" required placeholder="e.g. Eleanor, James" class="w-full p-3 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-yellow focus:outline-none">
+        </div>
+
+        <button type="submit" class="w-full bg-queens-black text-queens-yellow py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition">
+          Continue to RevisionSpark
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: CREATE / EDIT FLASHCARD             -->
+  <!-- ========================================== -->
+  <div id="cardModal" class="fixed inset-0 z-50 bg-queens-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 queens-shadow border-t-8 border-queens-purple space-y-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h3 id="cardModalTitle" class="font-serif-brand text-2xl font-bold text-queens-black">Create New Flashcard</h3>
+        <button onclick="closeCardModal()" class="text-gray-400 hover:text-gray-600 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="saveCardFromModal(event)" class="space-y-4">
+        <input type="hidden" id="editCardId">
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Subject / Deck Tag</label>
+          <input type="text" id="inputCardSubject" required placeholder="e.g. Mathematics, Physics" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
+            Question Prompt (LaTeX math supported with $...$ or $$...$$)
+          </label>
+          <textarea id="inputCardQuestion" required rows="3" placeholder="What is the quadratic formula?" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">
+            Answer Key & Explanation
+          </label>
+          <textarea id="inputCardAnswer" required rows="3" placeholder="$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Image URL (Optional)</label>
+          <input type="url" id="inputCardImageUrl" placeholder="https://images.unsplash.com/..." class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-queens-purple focus:outline-none">
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-3">
+          <button type="button" onclick="closeCardModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium text-xs hover:bg-gray-200">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-queens-purple text-white rounded-xl font-bold text-xs hover:brightness-110">
+            Save Flashcard
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- FOOTER                                     -->
+  <!-- ========================================== -->
+  <footer class="bg-queens-black text-slate-400 text-xs border-t border-slate-800 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <span class="font-serif-brand font-bold text-white tracking-wider">QUEEN'S COLLEGE TAUNTON</span>
+        <span class="text-gray-600">&bull;</span>
+        <span class="italic text-amber-200/80">Learning without limits.</span>
+      </div>
+      <p class="text-[11px] text-gray-500">
+        RevisionSpark Spaced Repetition Engine &bull; SuperMemo SM-2 &bull; Queen's Brand Book 2025
+      </p>
+    </div>
+  </footer>
+
+
+  <!-- ========================================== -->
+  <!-- APPLICATION JAVASCRIPT LOGIC               -->
+  <!-- ========================================== -->
+  <script>
+    /* ========================================== */
+    /* 1. STATE & DEFAULT SEED DATA               */
+    /* ========================================== */
+    
+    // User Profile
+    let currentUser = {
+      name: localStorage.getItem('qs_student_name') || 'Eleanor',
+      classCode: localStorage.getItem('qs_class_code') || 'MATH101'
+    };
+
+    // Default Seed Flashcards with rich LaTeX math and graphics
+    const defaultDeck = [
+      {
+        id: "card-101",
+        subject: "Mathematics",
+        question: "What is the Quadratic Formula for finding the roots of $ax^2 + bx + c = 0$?",
+        answer: "The roots are given by: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$",
+        imageUrl: "",
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        dueDate: new Date().toISOString(),
+        lastReviewed: null,
+        totalReviews: 0,
+        againCount: 0
+      },
+      {
+        id: "card-102",
+        subject: "Physics",
+        question: "State Einstein's Mass-Energy Equivalence relation and define its terms.",
+        answer: "$$E = mc^2$$\nWhere $E$ is Energy (Joules), $m$ is mass (kg), and $c = 3 \\times 10^8\\text{ m/s}$ (speed of light).",
+        imageUrl: "",
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        dueDate: new Date().toISOString(),
+        lastReviewed: null,
+        totalReviews: 0,
+        againCount: 0
+      },
+      {
+        id: "card-103",
+        subject: "Biology",
+        question: "What is the summary chemical equation for Photosynthesis?",
+        answer: "$$6CO_2 + 6H_2O \\xrightarrow{\\text{Light}} C_6H_{12}O_6 + 6O_2$$\nOccurs in chloroplasts containing chlorophyll.",
+        imageUrl: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80",
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        dueDate: new Date().toISOString(),
+        lastReviewed: null,
+        totalReviews: 0,
+        againCount: 0
+      },
+      {
+        id: "card-104",
+        subject: "Queen's Heritage",
+        question: "When was Queen's College founded and what is its historic motto?",
+        answer: "Founded in **1843**. The motto is *'Non Scholae Sed Vitae Discimus'* (We learn not for school, but for life).",
+        imageUrl: "",
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        dueDate: new Date().toISOString(),
+        lastReviewed: null,
+        totalReviews: 0,
+        againCount: 0
+      },
+      {
+        id: "card-105",
+        subject: "Chemistry",
+        question: "What is the Ideal Gas Law equation?",
+        answer: "$$PV = nRT$$\nWhere $P$ is pressure, $V$ is volume, $n$ is moles, $R$ is gas constant ($8.314\\text{ J/(mol K)}$), and $T$ is temperature in Kelvin.",
+        imageUrl: "",
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        dueDate: new Date().toISOString(),
+        lastReviewed: null,
+        totalReviews: 0,
+        againCount: 0
+      }
+    ];
+
+    // Main Deck & Review Logs State
+    let deck = [];
+    let reviewLogs = [];
+    let currentReviewQueue = [];
+    let activeCardIndex = 0;
+    let isFlipped = false;
+    let reviewedTodayCount = 0;
+    let tempAiGeneratedCards = [];
+
+    /* ========================================== */
+    /* 2. INITIALIZATION & STORAGE                */
+    /* ========================================== */
+    window.onload = function() {
+      loadDeckFromStorage();
+      loadReviewLogsFromStorage();
+      updateUserBadgeDisplay();
+      
+      // Initial review queue creation
+      prepareReviewQueue();
+      renderCurrentReviewCard();
+      renderLibraryCards();
+
+      // Keyboard listeners
+      document.addEventListener('keydown', handleKeyPress);
+    };
+
+    function loadDeckFromStorage() {
+      const stored = localStorage.getItem('qs_flashcard_deck');
+      if (stored) {
+        try {
+          deck = JSON.parse(stored);
+        } catch(e) {
+          deck = [...defaultDeck];
+        }
+      } else {
+        deck = [...defaultDeck];
+        saveDeckToStorage();
+      }
+    }
+
+    function saveDeckToStorage() {
+      localStorage.setItem('qs_flashcard_deck', JSON.stringify(deck));
+    }
+
+    function loadReviewLogsFromStorage() {
+      const stored = localStorage.getItem('qs_review_logs');
+      if (stored) {
+        try {
+          reviewLogs = JSON.parse(stored);
+        } catch(e) {
+          reviewLogs = [];
+        }
+      }
+    }
+
+    function saveReviewLog(logEntry) {
+      reviewLogs.push(logEntry);
+      localStorage.setItem('qs_review_logs', JSON.stringify(reviewLogs));
+    }
+
+    /* ========================================== */
+    /* 3. KATEX MATH & TEXT PARSER ENGINE        */
+    /* ========================================== */
+    function renderKaTeXFormattedText(text) {
+      if (!text) return '';
+      
+      // Escape unsafe HTML
+      let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      // Replace $$...$$ display math
+      safeText = safeText.replace(/\$\$(.*?)\$\$/gs, (match, mathContent) => {
+        try {
+          return `<div class="my-3 text-center overflow-x-auto py-1">${katex.renderToString(mathContent.trim(), { displayMode: true })}</div>`;
+        } catch (err) {
+          return match;
+        }
+      });
+
+      // Replace $...$ inline math
+      safeText = safeText.replace(/\$(.*?)\$/g, (match, mathContent) => {
+        try {
+          return katex.renderToString(mathContent.trim(), { displayMode: false });
+        } catch (err) {
+          return match;
+        }
+      });
+
+      // Bold text formatting **text**
+      safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // Italic text formatting *text*
+      safeText = safeText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // Replace line breaks
+      return safeText.replace(/\n/g, '<br>');
+    }
+
+    /* ========================================== */
+    /* 4. NAVIGATION & USER MODAL                */
+    /* ========================================== */
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('active', 'border-queens-yellow', 'text-queens-yellow', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-gray-300');
+      });
+
+      const selectedTab = document.getElementById(`sec-${tabName}`);
+      const selectedBtn = document.getElementById(`tab-${tabName}`);
+
+      if (selectedTab) selectedTab.classList.remove('hidden');
+      if (selectedBtn) {
+        selectedBtn.classList.add('active', 'border-queens-yellow', 'text-queens-yellow', 'font-semibold');
+        selectedBtn.classList.remove('border-transparent', 'text-gray-300');
+      }
+
+      if (tabName === 'library') renderLibraryCards();
+      if (tabName === 'analytics') renderAnalyticsDashboard();
+    }
+
+    function openLoginModal() {
+      document.getElementById('inputClassCode').value = currentUser.classCode;
+      document.getElementById('inputStudentName').value = currentUser.name;
+      document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function saveUserProfile(e) {
+      e.preventDefault();
+      const code = document.getElementById('inputClassCode').value.trim().toUpperCase() || 'MATH101';
+      const name = document.getElementById('inputStudentName').value.trim() || 'Student';
+
+      currentUser.classCode = code;
+      currentUser.name = name;
+
+      localStorage.setItem('qs_class_code', code);
+      localStorage.setItem('qs_student_name', name);
+
+      updateUserBadgeDisplay();
+      document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function updateUserBadgeDisplay() {
+      document.getElementById('displayUserName').innerText = currentUser.name;
+      document.getElementById('displayClassCode').innerText = currentUser.classCode;
+    }
+
+    /* ========================================== */
+    /* 5. SPACED REPETITION ENGINE (SM-2)         */
+    /* ========================================== */
+    function prepareReviewQueue() {
+      const now = new Date().getTime();
+      
+      // Filter cards due today or unreviewed
+      currentReviewQueue = deck.filter(card => {
+        if (!card.dueDate) return true;
+        return new Date(card.dueDate).getTime() <= now;
+      });
+
+      // Update Due Badge Count
+      document.getElementById('reviewBadgeCount').innerText = currentReviewQueue.length;
+      document.getElementById('statDueCount').innerText = currentReviewQueue.length;
+      document.getElementById('statReviewedToday').innerText = reviewedTodayCount;
+
+      activeCardIndex = 0;
+      isFlipped = false;
+    }
+
+    function renderCurrentReviewCard() {
+      const container = document.getElementById('reviewCardArea');
+      const emptyState = document.getElementById('emptyQueueState');
+      const cardInner = document.getElementById('cardInner');
+      const ratingControls = document.getElementById('ratingControls');
+
+      // Reset flip visual state
+      cardInner.classList.remove('flipped');
+      isFlipped = false;
+      ratingControls.classList.add('opacity-50', 'pointer-events-none');
+
+      if (currentReviewQueue.length === 0 || activeCardIndex >= currentReviewQueue.length) {
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      const card = currentReviewQueue[activeCardIndex];
+
+      // Populate Front
+      document.getElementById('cardSubjectFront').innerText = card.subject || 'General';
+      document.getElementById('cardQuestionText').innerHTML = renderKaTeXFormattedText(card.question);
+      document.getElementById('cardIdDisplay').innerText = card.id;
+      document.getElementById('cardEaseDisplay').innerText = `Ease: ${parseFloat(card.easeFactor || 2.5).toFixed(2)}`;
+
+      if (card.imageUrl) {
+        document.getElementById('cardFrontImage').src = card.imageUrl;
+        document.getElementById('cardFrontImageContainer').classList.remove('hidden');
+      } else {
+        document.getElementById('cardFrontImageContainer').classList.add('hidden');
+      }
+
+      // Populate Back
+      document.getElementById('cardSubjectBack').innerText = `${card.subject} Answer`;
+      document.getElementById('cardAnswerText').innerHTML = renderKaTeXFormattedText(card.answer);
+
+      if (card.imageUrl) {
+        document.getElementById('cardBackImage').src = card.imageUrl;
+        document.getElementById('cardBackImageContainer').classList.remove('hidden');
+      } else {
+        document.getElementById('cardBackImageContainer').classList.add('hidden');
+      }
+
+      // Update calculated interval preview text on rating buttons
+      calculateIntervalPreviews(card);
+    }
+
+    function flipCard() {
+      if (currentReviewQueue.length === 0) return;
+      
+      const cardInner = document.getElementById('cardInner');
+      const ratingControls = document.getElementById('ratingControls');
+
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        cardInner.classList.add('flipped');
+        ratingControls.classList.remove('opacity-50', 'pointer-events-none');
+      } else {
+        cardInner.classList.remove('flipped');
+        ratingControls.classList.add('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    function calculateIntervalPreviews(card) {
+      const currentInterval = card.interval || 0;
+      const ef = card.easeFactor || 2.5;
+
+      const hardInterval = Math.max(1, Math.round(currentInterval * 1.2)) || 1;
+      const goodInterval = currentInterval === 0 ? 1 : (currentInterval === 1 ? 3 : Math.round(currentInterval * ef));
+      const easyInterval = currentInterval === 0 ? 3 : Math.round(goodInterval * 1.3);
+
+      document.getElementById('intervalHardText').innerText = `${hardInterval} day${hardInterval > 1 ? 's' : ''}`;
+      document.getElementById('intervalGoodText').innerText = `${goodInterval} day${goodInterval > 1 ? 's' : ''}`;
+      document.getElementById('intervalEasyText').innerText = `${easyInterval} day${easyInterval > 1 ? 's' : ''}`;
+    }
+
+    // Rate Card executing SuperMemo SM-2 algorithm logic
+    function rateCard(ratingQuality, e) {
+      if (e) e.stopPropagation();
+      if (!isFlipped || currentReviewQueue.length === 0) return;
+
+      const card = currentReviewQueue[activeCardIndex];
+      let q = ratingQuality; // 1: Again, 2: Hard, 3: Good, 4: Easy
+
+      let repetitions = card.repetitions || 0;
+      let interval = card.interval || 0;
+      let easeFactor = card.easeFactor || 2.5;
+
+      card.totalReviews = (card.totalReviews || 0) + 1;
+
+      // SM-2 Calculation
+      if (q === 1) { // Again (Failed)
+        card.againCount = (card.againCount || 0) + 1;
+        repetitions = 0;
+        interval = 0; // Schedule for immediate re-test
+        easeFactor = Math.max(1.3, easeFactor - 0.2);
+      } else {
+        // Successful Recall
+        if (q === 2) { // Hard
+          repetitions += 1;
+          interval = interval === 0 ? 1 : Math.max(1, Math.round(interval * 1.2));
+          easeFactor = Math.max(1.3, easeFactor - 0.15);
+        } else if (q === 3) { // Good
+          repetitions += 1;
+          if (repetitions === 1) interval = 1;
+          else if (repetitions === 2) interval = 3;
+          else interval = Math.round(interval * easeFactor);
+
+          // Standard SM-2 EF formula adjustment
+          easeFactor = easeFactor + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+        } else if (q === 4) { // Easy
+          repetitions += 1;
+          if (repetitions === 1) interval = 2;
+          else if (repetitions === 2) interval = 6;
+          else interval = Math.round(interval * easeFactor * 1.3);
+
+          easeFactor = easeFactor + 0.15;
+        }
+      }
+
+      easeFactor = Math.max(1.3, parseFloat(easeFactor.toFixed(2)));
+
+      // Calculate Next Due Timestamp
+      const nextDue = new Date();
+      if (interval === 0) {
+        nextDue.setMinutes(nextDue.getMinutes() + 1); // 1 minute re-test
+      } else {
+        nextDue.setDate(nextDue.getDate() + interval);
+      }
+
+      // Update card item in master deck
+      const masterCard = deck.find(d => d.id === card.id);
+      if (masterCard) {
+        masterCard.repetitions = repetitions;
+        masterCard.interval = interval;
+        masterCard.easeFactor = easeFactor;
+        masterCard.dueDate = nextDue.toISOString();
+        masterCard.lastReviewed = new Date().toISOString();
+        masterCard.totalReviews = card.totalReviews;
+        masterCard.againCount = card.againCount;
+      }
+
+      saveDeckToStorage();
+
+      // Log review event for analytics
+      saveReviewLog({
+        timestamp: new Date().toISOString(),
+        studentName: currentUser.name,
+        classCode: currentUser.classCode,
+        cardId: card.id,
+        subject: card.subject,
+        rating: q,
+        easeFactor: easeFactor,
+        interval: interval
+      });
+
+      reviewedTodayCount++;
+
+      // Advance queue
+      if (q === 1) {
+        // Re-insert failed card at end of queue
+        currentReviewQueue.push(card);
+      }
+
+      activeCardIndex++;
+      prepareReviewQueue();
+      renderCurrentReviewCard();
+    }
+
+    function handleKeyPress(e) {
+      // Don't intercept typing in inputs
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        flipCard();
+      } else if (['Digit1', 'Digit2', 'Digit3', 'Digit4'].includes(e.code)) {
+        const rating = parseInt(e.code.replace('Digit', ''));
+        rateCard(rating);
+      }
+    }
+
+    function resetAllReviewTimes() {
+      const now = new Date().toISOString();
+      deck.forEach(c => c.dueDate = now);
+      saveDeckToStorage();
+      reviewedTodayCount = 0;
+      prepareReviewQueue();
+      renderCurrentReviewCard();
+    }
+
+
+    /* ========================================== */
+    /* 6. DECK LIBRARY & CARD MANAGEMENT          */
+    /* ========================================== */
+    function renderLibraryCards() {
+      const grid = document.getElementById('libraryGrid');
+      const searchQuery = document.getElementById('searchLibraryInput').value.toLowerCase();
+      const subjectFilter = document.getElementById('filterSubjectSelect').value;
+
+      // Update subject filter options dropdown
+      updateSubjectDropdownOptions();
+
+      grid.innerHTML = '';
+
+      const filtered = deck.filter(c => {
+        const matchesSubject = subjectFilter === 'ALL' || c.subject === subjectFilter;
+        const matchesQuery = !searchQuery || 
+          c.question.toLowerCase().includes(searchQuery) || 
+          c.answer.toLowerCase().includes(searchQuery) ||
+          c.subject.toLowerCase().includes(searchQuery);
+
+        return matchesSubject && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-gray-400">
+            <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+            <p class="text-sm font-medium">No flashcards found matching filters.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(c => {
+        const cardEl = document.createElement('div');
+        cardEl.className = "bg-white rounded-2xl p-5 queens-shadow queens-border flex flex-col justify-between hover:border-queens-purple transition space-y-3";
+        
+        cardEl.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase">${c.subject || 'General'}</span>
+              <span class="text-gray-400 font-mono text-[10px]">EF: ${parseFloat(c.easeFactor || 2.5).toFixed(2)}</span>
+            </div>
+            
+            <div class="font-serif-brand font-bold text-base text-queens-black line-clamp-3 mb-2">
+              ${renderKaTeXFormattedText(c.question)}
+            </div>
+
+            <div class="text-xs text-gray-600 line-clamp-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-sans">
+              ${renderKaTeXFormattedText(c.answer)}
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+            <span class="text-gray-400 text-[10px]">Reviews: ${c.totalReviews || 0}</span>
+            <div class="space-x-1">
+              <button onclick="editCardModal('${c.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button onclick="deleteCard('${c.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(cardEl);
+      });
+    }
+
+    function updateSubjectDropdownOptions() {
+      const select = document.getElementById('filterSubjectSelect');
+      const currentVal = select.value;
+      
+      const subjects = ['ALL', ...new Set(deck.map(c => c.subject || 'General'))];
+      
+      select.innerHTML = subjects.map(s => 
+        `<option value="${s}" ${s === currentVal ? 'selected' : ''}>${s === 'ALL' ? 'All Subjects' : s}</option>`
+      ).join('');
+    }
+
+    function openCardModal() {
+      document.getElementById('editCardId').value = '';
+      document.getElementById('cardModalTitle').innerText = 'Create New Flashcard';
+      document.getElementById('inputCardSubject').value = '';
+      document.getElementById('inputCardQuestion').value = '';
+      document.getElementById('inputCardAnswer').value = '';
+      document.getElementById('inputCardImageUrl').value = '';
+      document.getElementById('cardModal').classList.remove('hidden');
+    }
+
+    function editCardModal(cardId) {
+      const c = deck.find(item => item.id === cardId);
+      if (!c) return;
+
+      document.getElementById('editCardId').value = c.id;
+      document.getElementById('cardModalTitle').innerText = 'Edit Flashcard';
+      document.getElementById('inputCardSubject').value = c.subject || '';
+      document.getElementById('inputCardQuestion').value = c.question || '';
+      document.getElementById('inputCardAnswer').value = c.answer || '';
+      document.getElementById('inputCardImageUrl').value = c.imageUrl || '';
+      document.getElementById('cardModal').classList.remove('hidden');
+    }
+
+    function closeCardModal() {
+      document.getElementById('cardModal').classList.add('hidden');
+    }
+
+    function saveCardFromModal(e) {
+      e.preventDefault();
+
+      const cardId = document.getElementById('editCardId').value;
+      const subject = document.getElementById('inputCardSubject').value.trim() || 'General';
+      const question = document.getElementById('inputCardQuestion').value.trim();
+      const answer = document.getElementById('inputCardAnswer').value.trim();
+      const imageUrl = document.getElementById('inputCardImageUrl').value.trim();
+
+      if (cardId) {
+        // Update existing
+        const card = deck.find(c => c.id === cardId);
+        if (card) {
+          card.subject = subject;
+          card.question = question;
+          card.answer = answer;
+          card.imageUrl = imageUrl;
+        }
+      } else {
+        // Create new
+        const newCard = {
+          id: `card-${Date.now()}`,
+          subject: subject,
+          question: question,
+          answer: answer,
+          imageUrl: imageUrl,
+          repetitions: 0,
+          interval: 0,
+          easeFactor: 2.5,
+          dueDate: new Date().toISOString(),
+          lastReviewed: null,
+          totalReviews: 0,
+          againCount: 0
+        };
+        deck.push(newCard);
+      }
+
+      saveDeckToStorage();
+      closeCardModal();
+      prepareReviewQueue();
+      renderLibraryCards();
+    }
+
+    function deleteCard(cardId) {
+      if (!confirm('Are you sure you want to delete this flashcard?')) return;
+      deck = deck.filter(c => c.id !== cardId);
+      saveDeckToStorage();
+      prepareReviewQueue();
+      renderLibraryCards();
+    }
+
+
+    /* ========================================== */
+    /* 7. IMPORT & EXPORT (JSON & CSV)            */
+    /* ========================================== */
+    function exportDeckJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(deck, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `Queens_Flashcards_${currentUser.classCode}_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDeckJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const importedDeck = JSON.parse(evt.target.result);
+          if (Array.isArray(importedDeck)) {
+            deck = importedDeck;
+            saveDeckToStorage();
+            prepareReviewQueue();
+            renderLibraryCards();
+            alert(`Successfully imported ${importedDeck.length} flashcards!`);
+          } else {
+            alert('Invalid JSON file structure.');
+          }
+        } catch(err) {
+          alert('Failed to parse JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportDeckCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,ID,Subject,Question,Answer,ImageUrl\n";
+      
+      deck.forEach(c => {
+        const safeQ = `"${(c.question || '').replace(/"/g, '""')}"`;
+        const safeA = `"${(c.answer || '').replace(/"/g, '""')}"`;
+        csvContent += `${c.id},"${c.subject || ''}",${safeQ},${safeA},"${c.imageUrl || ''}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Queens_Flashcards_${currentUser.classCode}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+
+    /* ========================================== */
+    /* 8. AI FLASHCARD GENERATOR (GEMINI API)     */
+    /* ========================================== */
+    async function generateCardsWithGemini() {
+      const topicText = document.getElementById('aiTopicInput').value.trim();
+      const subjectTag = document.getElementById('aiSubjectTag').value.trim() || 'General';
+      const cardCount = parseInt(document.getElementById('aiCardCount').value) || 5;
+      const btn = document.getElementById('btnGenerateAI');
+
+      if (!topicText) {
+        alert('Please enter a topic or lesson notes for Gemini to generate flashcards.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating Queen's Cards...`;
+
+      const prompt = `Act as an expert Queen's College academic tutor. Generate ${cardCount} high-quality flashcards based on the following study topic/notes:
+"${topicText}".
+
+Requirements:
+- Subject: "${subjectTag}"
+- Formatting: Use LaTeX equations with '$...$' for inline math and '$$...$$' for display math equations where appropriate.
+- Quality: Ensure precise, clear questions and complete educational answers suitable for spaced repetition memory recall.`;
+
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                question: { type: "STRING" },
+                answer: { type: "STRING" }
+              },
+              required: ["question", "answer"]
+            }
+          }
+        }
+      };
+
+      const apiKey = ""; // Canvas runtime environment automatically provides the key
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (jsonText) {
+          const generatedItems = JSON.parse(jsonText);
+          tempAiGeneratedCards = generatedItems.map((item, idx) => ({
+            id: `ai-${Date.now()}-${idx}`,
+            subject: subjectTag,
+            question: item.question,
+            answer: item.answer,
+            imageUrl: "",
+            repetitions: 0,
+            interval: 0,
+            easeFactor: 2.5,
+            dueDate: new Date().toISOString(),
+            lastReviewed: null,
+            totalReviews: 0,
+            againCount: 0
+          }));
+
+          renderAiGeneratedPreview();
+        } else {
+          alert('Could not generate cards. Please check your topic prompt and try again.');
+        }
+
+      } catch (error) {
+        console.error("Gemini API Error:", error);
+        alert('Error connecting to Gemini AI generator. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-bolt text-amber-300"></i><span>Generate Queen's Flashcards</span>`;
+      }
+    }
+
+    function renderAiGeneratedPreview() {
+      const resultsArea = document.getElementById('aiResultsArea');
+      const resultsList = document.getElementById('aiResultsList');
+
+      resultsArea.classList.remove('hidden');
+      resultsList.innerHTML = '';
+
+      tempAiGeneratedCards.forEach((c, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-2xl queens-shadow border border-purple-100 flex flex-col justify-between space-y-3";
+        card.innerHTML = `
+          <div>
+            <span class="bg-purple-100 text-queens-purple font-bold px-2.5 py-0.5 rounded-full text-[10px] uppercase">${c.subject}</span>
+            <div class="font-serif-brand font-bold text-base text-queens-black mt-2">
+              ${renderKaTeXFormattedText(c.question)}
+            </div>
+            <div class="text-xs text-gray-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 mt-2">
+              ${renderKaTeXFormattedText(c.answer)}
+            </div>
+          </div>
+          <button onclick="addSingleAiCard(${idx})" class="w-full bg-slate-100 hover:bg-queens-purple hover:text-white text-slate-700 py-2 rounded-xl text-xs font-bold transition">
+            <i class="fa-solid fa-plus mr-1"></i> Add Card to Deck
+          </button>
+        `;
+        resultsList.appendChild(card);
+      });
+    }
+
+    function addSingleAiCard(index) {
+      if (tempAiGeneratedCards[index]) {
+        deck.push(tempAiGeneratedCards[index]);
+        saveDeckToStorage();
+        prepareReviewQueue();
+        alert('Flashcard added to Deck Library!');
+      }
+    }
+
+    function addAllAiGeneratedCards() {
+      if (tempAiGeneratedCards.length > 0) {
+        deck.push(...tempAiGeneratedCards);
+        saveDeckToStorage();
+        prepareReviewQueue();
+        alert(`Added ${tempAiGeneratedCards.length} AI cards to your Deck Library!`);
+        document.getElementById('aiResultsArea').classList.add('hidden');
+      }
+    }
+
+
+    /* ========================================== */
+    /* 9. TEACHER ANALYTICS & STRUGGLE HEATMAP    */
+    /* ========================================== */
+    function renderAnalyticsDashboard() {
+      const classFilter = document.getElementById('analyticsClassFilter').value;
+
+      // Filter review logs
+      const filteredLogs = reviewLogs.filter(log => classFilter === 'ALL' || log.classCode === classFilter);
+
+      // Total Reviews
+      document.getElementById('analyticsTotalReviews').innerText = filteredLogs.length;
+
+      // Class Retention Rate (% of ratings that are Good (3) or Easy (4))
+      const successReviews = filteredLogs.filter(l => l.rating >= 3).length;
+      const retentionPct = filteredLogs.length > 0 ? Math.round((successReviews / filteredLogs.length) * 100) : 100;
+      document.getElementById('analyticsAvgRetention').innerText = `${retentionPct}%`;
+
+      // Average Ease Factor
+      const avgEF = deck.length > 0 ? (deck.reduce((sum, c) => sum + (c.easeFactor || 2.5), 0) / deck.length).toFixed(2) : '2.50';
+      document.getElementById('analyticsAvgEase').innerText = avgEF;
+
+      // Struggle Heatmap Table Calculation
+      const tbody = document.getElementById('struggleTableBody');
+      tbody.innerHTML = '';
+
+      // High Risk Cards: Failed ("Again") rate > 30% or EF < 1.8
+      const highRiskCards = deck.filter(card => {
+        const total = card.totalReviews || 0;
+        const fails = card.againCount || 0;
+        const failRate = total > 0 ? (fails / total) : 0;
+        return (total >= 2 && failRate >= 0.3) || (card.easeFactor && card.easeFactor < 1.8);
+      });
+
+      document.getElementById('analyticsHighRiskCount').innerText = highRiskCards.length;
+
+      if (highRiskCards.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="p-6 text-center text-gray-400">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-xl mb-1"></i>
+              <p>No high-risk cards detected! Class retention is currently performing at target levels.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      highRiskCards.forEach(c => {
+        const total = c.totalReviews || 1;
+        const fails = c.againCount || 0;
+        const failRatePct = Math.round((fails / total) * 100);
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="p-3 font-mono text-[10px] text-gray-500">${c.id}</td>
+          <td class="p-3"><span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold text-[10px]">${c.subject}</span></td>
+          <td class="p-3 max-w-xs font-serif-brand text-sm font-semibold truncate">${c.question}</td>
+          <td class="p-3 text-center font-bold">${total}</td>
+          <td class="p-3 text-center">
+            <span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full font-bold text-xs">${failRatePct}%</span>
+          </td>
+          <td class="p-3 text-center font-mono font-bold">${parseFloat(c.easeFactor).toFixed(2)}</td>
+          <td class="p-3 text-rose-700 font-medium text-[11px]">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i> High Failure Rate — Review Topic
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+  </script>
+</body>
+</html>
